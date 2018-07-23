@@ -1,0 +1,7 @@
+project_token: f546eef15e411946e7be8e42
+name: spotify-social-ingest
+jobs: 
+  - job_id: ec632019-0c02-45a8-9b88-95673177dee0
+    language: python
+    name: Main
+    entrypoint: "main.py"
