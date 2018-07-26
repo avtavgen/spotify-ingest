@@ -122,24 +122,9 @@ class SpotifyProcessor(object):
             for track in tracks:
                 try:
                     track_data = dict()
-                    album_data = dict()
-                    # album_data["album_type"] = track["track"]["album"]["album_type"]
-                    # album_data["id"] = track["track"]["album"]["id"]
-                    # album_data["name"] = track["track"]["album"]["name"]
-                    # album_data["release_date"] = track["track"]["album"]["release_date"]
-                    # album_data["type"] = track["track"]["album"]["type"]
-                    # album_data["uri"] = track["track"]["album"]["uri"]
                     artist_ids_ = []
                     for artist in track["track"]["artists"]:
-                        # artist_data["id"] = artist["id"]
-                        # artist_data["name"] = artist["name"]
-                        # artist_data["type"] = artist["type"]
-                        # artist_data["uri"] = artist["uri"]
-                        # artist_data["external_urls"] = artist["external_urls"]
                         artist_ids_.append(artist["id"])
-                        # user_list.append(self._get_user_info(artist_data_list))
-                    # track_data["album_data"] = album_data
-                    # track_data["artist_data"] = artist_data_list
                     artist_ids.extend(artist_ids_)
                     track_data["uri"] = "spotify␟track␟{}".format(track["track"]["id"])
                     track_data["artists_id"] = artist_ids_
@@ -159,14 +144,15 @@ class SpotifyProcessor(object):
                     track_data["track_number"] = track["track"]["track_number"]
                     track_data["type"] = track["track"]["type"]
                     track_info.append(track_data)
+                    self.log.info(track_data)
                 except Exception as e:
                     self.log.info("Failed to fetch playlist: {}".format(e))
             randint(4, 6)
             if not self.next:
                 break
-        # for users in batches(list(set(artist_ids)), 40):
-        #     user_list.extend(self._get_user_info(users))
-        #     randint(4, 6)
+        for users in batches(list(set(artist_ids)), 40):
+            user_list.extend(self._get_user_info(users))
+            randint(4, 6)
         return track_info, user_list
 
     def _get_user_info(self, user_ids):
