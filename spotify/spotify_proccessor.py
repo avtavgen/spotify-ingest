@@ -99,17 +99,15 @@ class SpotifyProcessor(object):
                 if not self.next:
                     break
             for playlist in playlists_list:
-                self.log.info(playlist)
                 resp = self._get_tracks(playlist)
-                track_list.append(resp[0])
-                user_list.append(resp[1])
-            merged_tracks = list(itertools.chain.from_iterable(track_list))
-            merged_users = list(itertools.chain.from_iterable(user_list))
+                track_list.extend(resp[0])
+                user_list.extend(resp[1])
             category_data["category_id"] = category["id"]
             category_data["category_name"] = category["name"]
-            category_data["track_count"] = len(merged_tracks)
-            category_data["artist_count"] = len(merged_users)
-            self.entity.save(category=category_data, users=merged_users, tracks=merged_tracks)
+            category_data["track_count"] = len(track_list)
+            category_data["artist_count"] = len(user_list)
+            self.log.info(category_data)
+            self.entity.save(category=category_data, users=track_list, tracks=user_list)
 
     def _get_tracks(self, playlist):
         artist_ids = []
@@ -159,14 +157,13 @@ class SpotifyProcessor(object):
                     track_data["track_number"] = track["track"]["track_number"]
                     track_data["type"] = track["track"]["type"]
                     track_info.append(track_data)
-                    self.log.info(track_data)
                 except Exception as e:
                     self.log.info("Failed to fetch playlist: {}".format(e))
             if not self.next:
                 break
-        for users in batches(artist_ids, 40):
-            self.log.info('Ids: {}'.format(users))
+        for users in batches(list(set(artist_ids)), 40):
             user_list.extend(self._get_user_info(users))
+            randint(4, 6)
         return track_info, user_list
 
     def _get_user_info(self, user_ids):
