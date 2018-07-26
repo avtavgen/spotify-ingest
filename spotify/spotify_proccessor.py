@@ -125,6 +125,7 @@ class SpotifyProcessor(object):
                         # artist_data["external_urls"] = artist["external_urls"]
                         artist_data_list.append(artist["id"])
                         user_list.append(self._get_user_info(artist["id"]))
+                        sleep(randint(1, 5))
                     # track_data["album_data"] = album_data
                     # track_data["artist_data"] = artist_data_list
                     track_data["uri"] = "spotify␟track␟{}".format(track["track"]["id"])
