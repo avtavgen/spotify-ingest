@@ -35,7 +35,12 @@ class SpotifyProcessor(object):
             except requests.exceptions.HTTPError as e:
                 self.log.info("{}".format(e))
                 sleep(randint(10, 20))
-                continue
+                retries += 1
+                if retries <= self.retry:
+                    self.log.info("Trying again!")
+                    continue
+                else:
+                    sys.exit("Max retries reached")
             except Exception as e:
                 self.log.info("{}: Failed to make request on try {}".format(e, retries))
                 retries += 1
@@ -125,7 +130,7 @@ class SpotifyProcessor(object):
                         # artist_data["external_urls"] = artist["external_urls"]
                         artist_data_list.append(artist["id"])
                         user_list.append(self._get_user_info(artist["id"]))
-                        sleep(randint(1, 5))
+                        sleep(randint(4, 6))
                     # track_data["album_data"] = album_data
                     # track_data["artist_data"] = artist_data_list
                     track_data["uri"] = "spotify␟track␟{}".format(track["track"]["id"])
@@ -166,6 +171,7 @@ class SpotifyProcessor(object):
             user_data["type"] = raw_data["type"]
             user_data["followers"] = raw_data["followers"]["total"]
             user_data["genres"] = raw_data["genres"]
+            self.log.info(user_data)
             return user_data
         except Exception as e:
             self.log.info("Failed to fetch user info: {}".format(e))
