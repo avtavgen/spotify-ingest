@@ -31,11 +31,11 @@ class SpotifyProcessor(object):
             try:
                 response = requests.get(url, headers=self.headers)
                 response.raise_for_status()
-                # sleep(randint(4, 6))
                 return response
             except requests.exceptions.HTTPError as e:
                 self.log.info("{}".format(e))
-                break
+                sleep(randint(10, 20))
+                continue
             except Exception as e:
                 self.log.info("{}: Failed to make request on try {}".format(e, retries))
                 retries += 1
@@ -125,7 +125,6 @@ class SpotifyProcessor(object):
                         # artist_data["external_urls"] = artist["external_urls"]
                         artist_data_list.append(artist["id"])
                         user_list.append(self._get_user_info(artist["id"]))
-                        sleep(randint(2, 5))
                     # track_data["album_data"] = album_data
                     # track_data["artist_data"] = artist_data_list
                     track_data["uri"] = "spotify␟track␟{}".format(track["track"]["id"])
