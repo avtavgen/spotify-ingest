@@ -87,6 +87,7 @@ class SpotifyProcessor(object):
                 if not self.next:
                     break
             for playlist in playlists_list:
+                self.log.info(playlist)
                 resp = self._get_tracks(playlist)
                 track_list.append(resp[0])
                 user_list.append(resp[1])
