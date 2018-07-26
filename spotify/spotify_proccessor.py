@@ -31,7 +31,7 @@ class SpotifyProcessor(object):
             try:
                 response = requests.get(url, headers=self.headers)
                 response.raise_for_status()
-                sleep(randint(4, 10))
+                sleep(randint(4, 6))
                 return response
             except requests.exceptions.HTTPError as e:
                 self.log.info("{}".format(e))
@@ -117,17 +117,17 @@ class SpotifyProcessor(object):
                     # album_data["type"] = track["track"]["album"]["type"]
                     # album_data["uri"] = track["track"]["album"]["uri"]
                     for artist in track["track"]["artists"]:
-                        # artist_data = dict()
                         # artist_data["id"] = artist["id"]
                         # artist_data["name"] = artist["name"]
                         # artist_data["type"] = artist["type"]
                         # artist_data["uri"] = artist["uri"]
                         # artist_data["external_urls"] = artist["external_urls"]
-                        # artist_data_list.append(artist_data)
+                        artist_data_list.append(artist["id"])
                         user_list.append(self._get_user_info(artist["id"]))
                     # track_data["album_data"] = album_data
                     # track_data["artist_data"] = artist_data_list
                     track_data["uri"] = "spotify␟track␟{}".format(track["track"]["id"])
+                    track_data["artists_id"] = artist_data_list
                     track_data["category"] = playlist["category"]
                     track_data["playlist"] = playlist["name"]
                     track_data["added_at"] = track["added_at"]
@@ -151,19 +151,22 @@ class SpotifyProcessor(object):
                 break
         return track_info, user_list
 
-    def _get_user_info(self, id):
-        user_data = dict()
-        response = self._make_request(self.base_url + "artists/{}".format(id), self.access_token)
-        raw_data = response.json()
-        user_data["uri"] = "spotify␟user␟{}".format(raw_data["id"])
-        user_data["ingested"] = False
-        user_data["date"] = datetime.now().strftime("%Y-%m-%d")
-        user_data["name"] = raw_data["name"]
-        user_data["popularity"] = raw_data["popularity"]
-        user_data["type"] = raw_data["type"]
-        user_data["followers"] = raw_data["followers"]["total"]
-        user_data["genres"] = raw_data["genres"]
-        return user_data
+    def _get_user_info(self, user_id):
+        try:
+            user_data = dict()
+            response = self._make_request(self.base_url + "artists/{}".format(user_id), self.access_token)
+            raw_data = response.json()
+            user_data["uri"] = "spotify␟user␟{}".format(raw_data["id"])
+            user_data["ingested"] = False
+            user_data["date"] = datetime.now().strftime("%Y-%m-%d")
+            user_data["name"] = raw_data["name"]
+            user_data["popularity"] = raw_data["popularity"]
+            user_data["type"] = raw_data["type"]
+            user_data["followers"] = raw_data["followers"]["total"]
+            user_data["genres"] = raw_data["genres"]
+            return user_data
+        except Exception as e:
+            self.log.info("Failed to fetch user info: {}".format(e))
 
     def _auth(self):
         data = dict()

@@ -53,6 +53,7 @@ class SocialStatements:
         },
         "columns": {
             "uri": "text",
+            "artists_id": "set<text>",
             "category": "text",
             "playlist": "text",
             "added_at": "text",
