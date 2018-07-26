@@ -6,6 +6,13 @@ from random import randint
 from datetime import datetime
 
 
+def batches(iterable, n=10):
+    """divide a single list into a list of lists of size n """
+    batchLen = len(iterable)
+    for ndx in range(0, batchLen, n):
+        yield list(iterable[ndx:min(ndx + n, batchLen)])
+
+
 class SpotifyProcessor(object):
     def __init__(self, entity, log, retry=3):
         self.log = log
@@ -105,6 +112,7 @@ class SpotifyProcessor(object):
             self.entity.save(category=category_data, users=merged_users, tracks=merged_tracks)
 
     def _get_tracks(self, playlist):
+        artist_ids = []
         track_info = []
         user_list = []
         while True:
@@ -115,26 +123,26 @@ class SpotifyProcessor(object):
                 try:
                     track_data = dict()
                     album_data = dict()
-                    artist_data_list = []
                     # album_data["album_type"] = track["track"]["album"]["album_type"]
                     # album_data["id"] = track["track"]["album"]["id"]
                     # album_data["name"] = track["track"]["album"]["name"]
                     # album_data["release_date"] = track["track"]["album"]["release_date"]
                     # album_data["type"] = track["track"]["album"]["type"]
                     # album_data["uri"] = track["track"]["album"]["uri"]
+                    artist_ids_ = []
                     for artist in track["track"]["artists"]:
                         # artist_data["id"] = artist["id"]
                         # artist_data["name"] = artist["name"]
                         # artist_data["type"] = artist["type"]
                         # artist_data["uri"] = artist["uri"]
                         # artist_data["external_urls"] = artist["external_urls"]
-                        artist_data_list.append(artist["id"])
-                        user_list.append(self._get_user_info(artist["id"]))
-                        sleep(randint(4, 6))
+                        artist_ids_.append(artist["id"])
+                        # user_list.append(self._get_user_info(artist_data_list))
                     # track_data["album_data"] = album_data
                     # track_data["artist_data"] = artist_data_list
+                    artist_ids.extend(artist_ids_)
                     track_data["uri"] = "spotify␟track␟{}".format(track["track"]["id"])
-                    track_data["artists_id"] = artist_data_list
+                    track_data["artists_id"] = artist_ids_
                     track_data["category"] = playlist["category"]
                     track_data["playlist"] = playlist["name"]
                     track_data["added_at"] = track["added_at"]
@@ -156,25 +164,31 @@ class SpotifyProcessor(object):
                     self.log.info("Failed to fetch playlist: {}".format(e))
             if not self.next:
                 break
+        for users in batches(artist_ids, 40):
+            self.log.info('Ids: {}'.format(users))
+            user_list.extend(self._get_user_info(users))
         return track_info, user_list
 
-    def _get_user_info(self, user_id):
-        try:
-            user_data = dict()
-            response = self._make_request(self.base_url + "artists/{}".format(user_id), self.access_token)
-            raw_data = response.json()
-            user_data["uri"] = "spotify␟user␟{}".format(raw_data["id"])
-            user_data["ingested"] = False
-            user_data["date"] = datetime.now().strftime("%Y-%m-%d")
-            user_data["name"] = raw_data["name"]
-            user_data["popularity"] = raw_data["popularity"]
-            user_data["type"] = raw_data["type"]
-            user_data["followers"] = raw_data["followers"]["total"]
-            user_data["genres"] = raw_data["genres"]
-            self.log.info(user_data)
-            return user_data
-        except Exception as e:
-            self.log.info("Failed to fetch user info: {}".format(e))
+    def _get_user_info(self, user_ids):
+        response = self._make_request(self.base_url + "artists?ids={}".format(",".join(user_ids)), self.access_token)
+        raw_data = response.json()
+        artist_list = []
+        for artist in raw_data["artists"]:
+            try:
+                user_data = dict()
+                user_data["uri"] = "spotify␟user␟{}".format(artist["id"])
+                user_data["ingested"] = False
+                user_data["date"] = datetime.now().strftime("%Y-%m-%d")
+                user_data["name"] = artist["name"]
+                user_data["popularity"] = artist["popularity"]
+                user_data["type"] = artist["type"]
+                user_data["followers"] = artist["followers"]["total"]
+                user_data["genres"] = artist["genres"]
+                self.log.info(user_data)
+                artist_list.append(user_data)
+            except Exception as e:
+                self.log.info("Failed to fetch user info: {}".format(e))
+        return artist_list
 
     def _auth(self):
         data = dict()
