@@ -164,9 +164,9 @@ class SpotifyProcessor(object):
             randint(4, 6)
             if not self.next:
                 break
-        for users in batches(list(set(artist_ids)), 40):
-            user_list.extend(self._get_user_info(users))
-            randint(4, 6)
+        # for users in batches(list(set(artist_ids)), 40):
+        #     user_list.extend(self._get_user_info(users))
+        #     randint(4, 6)
         return track_info, user_list
 
     def _get_user_info(self, user_ids):
