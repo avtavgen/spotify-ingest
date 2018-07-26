@@ -31,12 +31,10 @@ class SpotifyProcessor(object):
             try:
                 response = requests.get(url, headers=self.headers)
                 response.raise_for_status()
+                sleep(randint(4, 10))
                 return response
             except requests.exceptions.HTTPError as e:
                 self.log.info("{}".format(e))
-                if response.status_code == 429:
-                    self.log.info("Retry after: {}".format(response.headers['Retry-After']))
-                sleep(randint(7, 15))
                 break
             except Exception as e:
                 self.log.info("{}: Failed to make request on try {}".format(e, retries))
