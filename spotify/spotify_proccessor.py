@@ -31,7 +31,7 @@ class SpotifyProcessor(object):
             try:
                 response = requests.get(url, headers=self.headers)
                 response.raise_for_status()
-                sleep(randint(4, 6))
+                # sleep(randint(4, 6))
                 return response
             except requests.exceptions.HTTPError as e:
                 self.log.info("{}".format(e))
@@ -125,6 +125,7 @@ class SpotifyProcessor(object):
                         # artist_data["external_urls"] = artist["external_urls"]
                         artist_data_list.append(artist["id"])
                         user_list.append(self._get_user_info(artist["id"]))
+                        sleep(randint(2, 5))
                     # track_data["album_data"] = album_data
                     # track_data["artist_data"] = artist_data_list
                     track_data["uri"] = "spotify␟track␟{}".format(track["track"]["id"])
@@ -145,7 +146,7 @@ class SpotifyProcessor(object):
                     track_data["track_number"] = track["track"]["track_number"]
                     track_data["type"] = track["track"]["type"]
                     track_info.append(track_data)
-                    # self.log.info(track_data)
+                    self.log.info(track_data)
                 except Exception as e:
                     self.log.info("Failed to fetch playlist: {}".format(e))
             if not self.next:
