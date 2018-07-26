@@ -181,7 +181,6 @@ class SpotifyProcessor(object):
                 user_data["type"] = artist["type"]
                 user_data["followers"] = artist["followers"]["total"]
                 user_data["genres"] = artist["genres"]
-                self.log.info(user_data)
                 artist_list.append(user_data)
             except Exception as e:
                 self.log.info("Failed to fetch user info: {}".format(e))
