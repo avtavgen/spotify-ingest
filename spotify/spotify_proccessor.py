@@ -34,7 +34,7 @@ class SpotifyProcessor(object):
                 return response
             except requests.exceptions.HTTPError as e:
                 self.log.info("{}".format(e))
-                sleep(randint(6, 15))
+                sleep(randint(7, 15))
                 break
             except Exception as e:
                 self.log.info("{}: Failed to make request on try {}".format(e, retries))
@@ -144,7 +144,7 @@ class SpotifyProcessor(object):
                     track_data["track_number"] = track["track"]["track_number"]
                     track_data["type"] = track["track"]["type"]
                     track_info.append(track_data)
-                    self.log.info(track_data)
+                    # self.log.info(track_data)
                 except Exception as e:
                     self.log.info("Failed to fetch playlist: {}".format(e))
             if not self.next:
