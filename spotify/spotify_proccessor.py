@@ -65,6 +65,7 @@ class SpotifyProcessor(object):
 
     def _get_playlists(self):
         for category in self.categories:
+            self.log.info(category["id"])
             track_list = []
             user_list = []
             playlists_list = []
@@ -143,7 +144,7 @@ class SpotifyProcessor(object):
                     track_data["track_number"] = track["track"]["track_number"]
                     track_data["type"] = track["track"]["type"]
                     track_info.append(track_data)
-                    # self.log.info(track_data)
+                    self.log.info(track_data)
                 except Exception as e:
                     self.log.info("Failed to fetch playlist: {}".format(e))
             if not self.next:
