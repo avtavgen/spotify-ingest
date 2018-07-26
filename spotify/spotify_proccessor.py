@@ -74,6 +74,7 @@ class SpotifyProcessor(object):
             if not self.next:
                 break
         self.log.info(len(self.categories))
+        self.log.info(self.categories)
 
     def _get_playlists(self):
         for category in self.categories:
