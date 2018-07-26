@@ -100,6 +100,7 @@ class SpotifyProcessor(object):
                 if not self.next:
                     break
             for playlist in playlists_list:
+                self.log.info(playlist["name"])
                 resp = self._get_tracks(playlist)
                 track_list.extend(resp[0])
                 user_list.extend(resp[1])
@@ -160,6 +161,7 @@ class SpotifyProcessor(object):
                     track_info.append(track_data)
                 except Exception as e:
                     self.log.info("Failed to fetch playlist: {}".format(e))
+            randint(4, 6)
             if not self.next:
                 break
         for users in batches(list(set(artist_ids)), 40):
