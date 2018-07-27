@@ -89,11 +89,11 @@ class SocialStatements:
         # else:
         #     self.logger.info('skipping track ingest, no records in these social statements')
 
-        # if self.users:
-        #     self.logger.info('about to send {} user statements to the data engine'.format(len(self.users)))
-        #     self._write_batches(self.engine, self.logger, self.user_schema, self.users, batch_size)
-        # else:
-        #     self.logger.info('skipping user ingest, no records in these social statements')
+        if self.users:
+            self.logger.info('about to send {} user statements to the data engine'.format(len(self.users)))
+            self._write_batches(self.engine, self.logger, self.user_schema, self.users, batch_size)
+        else:
+            self.logger.info('skipping user ingest, no records in these social statements')
 
         if self.categories:
             self.logger.info('about to send {} user statements to the data engine'.format(len(self.categories)))
