@@ -97,6 +97,7 @@ class SpotifyProcessor(object):
                         playlists_list.append(playlist_data)
                     except Exception as e:
                         self.log.info("Failed to fetch playlist: {}".format(e))
+                        continue
                 if not self.next:
                     break
             for playlist in playlists_list:
@@ -148,6 +149,7 @@ class SpotifyProcessor(object):
                     track_info.append(track_data)
                 except Exception as e:
                     self.log.info("Failed to fetch playlist: {}".format(e))
+                    continue
             if not self.next:
                 break
         for users in batches(list(set(artist_ids)), 40):
@@ -174,6 +176,7 @@ class SpotifyProcessor(object):
                 artist_list.append(user_data)
             except Exception as e:
                 self.log.info("Failed to fetch user info: {}".format(e))
+                continue
         return artist_list
 
     def _auth(self):
