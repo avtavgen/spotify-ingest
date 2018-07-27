@@ -147,12 +147,10 @@ class SpotifyProcessor(object):
                     self.log.info(track_data)
                 except Exception as e:
                     self.log.info("Failed to fetch playlist: {}".format(e))
-            randint(4, 6)
             if not self.next:
                 break
         for users in batches(list(set(artist_ids)), 40):
             user_list.extend(self._get_user_info(users))
-            randint(4, 6)
         return track_info, user_list
 
     def _get_user_info(self, user_ids):
@@ -171,6 +169,7 @@ class SpotifyProcessor(object):
                 user_data["followers"] = artist["followers"]["total"]
                 user_data["genres"] = artist["genres"]
                 artist_list.append(user_data)
+                self.log.info(user_data)
             except Exception as e:
                 self.log.info("Failed to fetch user info: {}".format(e))
         return artist_list
