@@ -17,7 +17,7 @@ class SocialStatements:
         self.relations = []
 
     category_schema = {
-        "table_name": "categories_temp",
+        "table_name": "categories_tmp",
         "options": {
             "primary_key": ["category_id"]
         },
@@ -49,7 +49,7 @@ class SocialStatements:
     }
 
     track_schema = {
-        "table_name": "tracks_temp",
+        "table_name": "tracks_tmp",
         "options": {
             "primary_key": ["uri", "date"],
             "order_by": ["date desc"]
@@ -85,6 +85,7 @@ class SocialStatements:
         if self.tracks:
             self.track_schema["table_name"] = "{}_tracks_temp".format(category_name)
             self.logger.info('about to send {} track statements to the data engine'.format(len(self.tracks)))
+            self.logger.info(self.track_schema)
             self._write_batches(self.engine, self.logger, self.track_schema, self.tracks, batch_size)
         else:
             self.logger.info('skipping track ingest, no records in these social statements')
