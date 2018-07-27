@@ -83,19 +83,19 @@ class SocialStatements:
             self.logger.info('about to send {} track statements to the data engine'.format(len(self.tracks)))
             self._write_batches(self.engine, self.logger, self.track_schema, self.tracks, batch_size)
         else:
-            self.logger.debug('skipping track ingest, no records in these social statements')
+            self.logger.info('skipping track ingest, no records in these social statements')
 
         if self.users:
             self.logger.info('about to send {} user statements to the data engine'.format(len(self.users)))
             self._write_batches(self.engine, self.logger, self.user_schema, self.users, batch_size)
         else:
-            self.logger.debug('skipping user ingest, no records in these social statements')
+            self.logger.info('skipping user ingest, no records in these social statements')
 
         if self.category:
             self.logger.info('about to send {} category statement to the data engine'.format(self.category))
             res = self.engine.save(self.category_schema, category).result()
         else:
-            self.logger.debug('skipping category ingest, no records in these social statements')
+            self.logger.info('skipping category ingest, no records in these social statements')
 
     @staticmethod
     def _write_batches(engine, logger, schema, data, batch_size=40):
