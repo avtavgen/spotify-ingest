@@ -153,6 +153,7 @@ class SpotifyProcessor(object):
                 break
         for users in batches(list(set(artist_ids)), 40):
             user_list.extend(self._get_user_info(users))
+            sleep(randint(3, 6))
         return track_info, user_list
 
     def _get_user_info(self, user_ids):
