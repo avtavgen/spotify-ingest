@@ -112,7 +112,7 @@ class SpotifyProcessor(object):
             category_data["artist_count"] = len(user_list)
             self.log.info(category_data)
             sleep(randint(3, 6))
-            self.entity.save(category=category_data, users=track_list, tracks=user_list)
+            self.entity.save(category_data=category_data, users=track_list, tracks=user_list)
 
     def _get_tracks(self, playlist):
         artist_ids = []
