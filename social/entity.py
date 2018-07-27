@@ -76,18 +76,18 @@ class SocialStatements:
         }
     }
 
-    def save(self, batch_size=50, categories=None, users=None, tracks=None):
+    def save(self, batch_size=50, categories=None, users=None, tracks=None, category_name=None):
         """Write these social statements to the data engine in the appropriate manner."""
         self.users = users
         self.categories = categories
         self.tracks = tracks
 
-        # if self.tracks:
-        #     self.track_schema["table_name"] = "{}_tracks_temp".format(category["category_id"])
-        #     self.logger.info('about to send {} track statements to the data engine'.format(len(self.tracks)))
-        #     self._write_batches(self.engine, self.logger, self.track_schema, self.tracks, batch_size)
-        # else:
-        #     self.logger.info('skipping track ingest, no records in these social statements')
+        if self.tracks:
+            self.track_schema["table_name"] = "{}_tracks_temp".format(category_name)
+            self.logger.info('about to send {} track statements to the data engine'.format(len(self.tracks)))
+            self._write_batches(self.engine, self.logger, self.track_schema, self.tracks, batch_size)
+        else:
+            self.logger.info('skipping track ingest, no records in these social statements')
 
         if self.users:
             self.logger.info('about to send {} user statements to the data engine'.format(len(self.users)))
