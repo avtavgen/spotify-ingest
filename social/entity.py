@@ -30,12 +30,13 @@ class SocialStatements:
     }
 
     user_schema = {
-        "table_name": "user_temp",
+        "table_name": "user_tmp",
         "options": {
-            "primary_key": ["category_id"]
+            "primary_key": ["id"]
         },
         "columns": {
             "uri": "text",
+            "id": "text",
             "ingested": "boolean",
             "date": "date",
             "name": "text",

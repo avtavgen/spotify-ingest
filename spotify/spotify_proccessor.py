@@ -146,7 +146,6 @@ class SpotifyProcessor(object):
                     track_data["track_number"] = track["track"]["track_number"]
                     track_data["type"] = track["track"]["type"]
                     track_info.append(track_data)
-                    self.log.info(track_data)
                 except Exception as e:
                     self.log.info("Failed to fetch playlist: {}".format(e))
             if not self.next:
@@ -164,6 +163,7 @@ class SpotifyProcessor(object):
             try:
                 user_data = dict()
                 user_data["uri"] = "spotify␟user␟{}".format(artist["id"])
+                user_data["id"] = artist["id"]
                 user_data["ingested"] = False
                 user_data["date"] = datetime.now().strftime("%Y-%m-%d")
                 user_data["name"] = artist["name"]
@@ -172,7 +172,6 @@ class SpotifyProcessor(object):
                 user_data["followers"] = artist["followers"]["total"]
                 user_data["genres"] = artist["genres"]
                 artist_list.append(user_data)
-                self.log.info(user_data)
             except Exception as e:
                 self.log.info("Failed to fetch user info: {}".format(e))
         return artist_list
