@@ -135,6 +135,7 @@ class SpotifyProcessor(object):
                     track_data["artists_id"] = artist_ids_
                     track_data["category"] = playlist["category"]
                     track_data["playlist"] = playlist["name"]
+                    track_data["date"] = datetime.now().strftime("%Y-%m-%d")
                     track_data["added_at"] = track["added_at"]
                     track_data["disc_number"] = track["track"]["disc_number"]
                     track_data["duration_ms"] = track["track"]["duration_ms"]
