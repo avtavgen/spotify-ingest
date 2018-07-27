@@ -83,7 +83,7 @@ class SocialStatements:
         self.tracks = tracks
 
         if self.tracks:
-            self.track_schema["table_name"] = "{}_tracks_temp".format(category_name)
+            self.track_schema["table_name"] = "{}_tracks_tmp".format(category_name)
             self.logger.info('about to send {} track statements to the data engine'.format(len(self.tracks)))
             self.logger.info(self.track_schema)
             self._write_batches(self.engine, self.logger, self.track_schema, self.tracks, batch_size)
