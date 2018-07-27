@@ -10,7 +10,7 @@ class SocialStatements:
 
     def __init__(self, logger, engine=None):
         self.users = []
-        self.category_data = []
+        self.categories = []
         self.tracks = []
         self.engine = engine
         self.logger = logger
@@ -73,10 +73,10 @@ class SocialStatements:
         }
     }
 
-    def save(self, batch_size=50, category_data=None, users=None, tracks=None):
+    def save(self, batch_size=50, categories=None, users=None, tracks=None):
         """Write these social statements to the data engine in the appropriate manner."""
         self.users = users
-        self.category_data = category_data
+        self.categories = categories
         self.tracks = tracks
 
         # if self.tracks:
@@ -92,9 +92,9 @@ class SocialStatements:
         # else:
         #     self.logger.info('skipping user ingest, no records in these social statements')
 
-        if self.category_data:
-            self.logger.info('about to send {} category statement to the data engine'.format(self.category_data))
-            res = self.engine.save(self.category_schema, self.category_data).result()
+        if self.categories:
+            self.logger.info('about to send {} user statements to the data engine'.format(len(self.users)))
+            self._write_batches(self.engine, self.logger, self.user_schema, self.users, batch_size)
         else:
             self.logger.info('skipping category ingest, no records in these social statements')
 

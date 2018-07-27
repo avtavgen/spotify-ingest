@@ -82,6 +82,7 @@ class SpotifyProcessor(object):
             track_list = []
             user_list = []
             playlists_list = []
+            category_list = []
             category_data = dict()
             while True:
                 response = self._make_request(self.base_url + "browse/categories/{}/playlists?limit=50".format(category["id"]), self.access_token, self.next)
@@ -110,9 +111,10 @@ class SpotifyProcessor(object):
             category_data["category_name"] = category["name"]
             category_data["track_count"] = len(track_list)
             category_data["artist_count"] = len(user_list)
+            category_list.append(category_data)
             self.log.info(category_data)
             sleep(randint(3, 6))
-            self.entity.save(category_data=category_data, users=track_list, tracks=user_list)
+            self.entity.save(categories=category_list, users=track_list, tracks=user_list)
 
     def _get_tracks(self, playlist):
         artist_ids = []
