@@ -17,7 +17,7 @@ class SocialStatements:
         self.relations = []
 
     category_schema = {
-        "table_name": "categories_tmp",
+        "table_name": "categories",
         "options": {
             "primary_key": ["category_id"]
         },
@@ -30,7 +30,7 @@ class SocialStatements:
     }
 
     user_schema = {
-        "table_name": "user_tmp",
+        "table_name": "user",
         "options": {
             "primary_key": ["uri", "date"],
             "order_by": ["date desc"]
@@ -49,7 +49,7 @@ class SocialStatements:
     }
 
     track_schema = {
-        "table_name": "tracks_tmp",
+        "table_name": "tracks",
         "options": {
             "primary_key": ["uri", "date"],
             "order_by": ["date desc"]
@@ -83,7 +83,7 @@ class SocialStatements:
         self.tracks = tracks
 
         if self.tracks:
-            self.track_schema["table_name"] = "{}_tracks_tmp".format(category_name)
+            self.track_schema["table_name"] = "{}_tracks".format(category_name)
             self.logger.info('about to send {} track statements to the data engine'.format(len(self.tracks)))
             self.logger.info(self.track_schema)
             self._write_batches(self.engine, self.logger, self.track_schema, self.tracks, batch_size)

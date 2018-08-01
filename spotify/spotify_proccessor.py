@@ -41,7 +41,7 @@ class SpotifyProcessor(object):
                 return response
             except requests.exceptions.HTTPError as e:
                 self.log.info("{}".format(e))
-                sleep(randint(10, 20))
+                sleep(600)
                 retries += 1
                 if retries <= self.retry:
                     self.log.info("Trying again!")
