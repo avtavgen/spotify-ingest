@@ -193,9 +193,12 @@ class SpotifyProcessor(object):
         headers["Authorization"] = "Basic ZTZiOWQ0NzE2MTk3NGRlMWJmZGViYjhmMGQwMmViMjQ6MjhjYTgxMjAzZWEzNDllZTg0MGIzNzY5MjliZDZmZjA="
         headers["Content-Type"] = "application/x-www-form-urlencoded"
         response = requests.post("https://accounts.spotify.com/api/token", data=data, headers=headers)
+        self.log.info("Data: {}".format(data))
+        self.log.info("Headers: {}".format(headers))
         if response.status_code == 200:
             return response.json()["access_token"]
         else:
+            self.log.info(response.headers)
             raise Exception("SF login failed to run by returning code of {}.".format(response.status_code))
 
     def fetch(self):
