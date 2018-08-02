@@ -42,10 +42,10 @@ class SpotifyProcessor(object):
                 return response
             except requests.exceptions.HTTPError as e:
                 self.log.info("{}".format(e))
-                sleep(15)
-                self.log.info("Access token: {}".format(self.access_token))
-                self.access_token = self._auth()
-                self.log.info("Access token: {}".format(self.access_token))
+                sleep(6)
+                if response.status_code == 401:
+                    sleep()
+                    self.access_token = self._auth()
                 retries += 1
                 if retries <= self.retry:
                     self.log.info("Trying again!")
@@ -116,7 +116,6 @@ class SpotifyProcessor(object):
             category_data["artist_count"] = len(user_list)
             category_list.append(category_data)
             self.log.info(category_data)
-            sleep(randint(3, 6))
             self.entity.save(categories=category_list, users=user_list, tracks=track_list, category_name=category["id"])
 
     def _get_tracks(self, playlist):
@@ -158,9 +157,8 @@ class SpotifyProcessor(object):
                     continue
             if not self.next:
                 break
-        for users in batches(list(set(artist_ids)), 40):
+        for users in batches(list(set(artist_ids)), 50):
             user_list.extend(self._get_user_info(users))
-            sleep(randint(3, 6))
         return track_info, user_list
 
     def _get_user_info(self, user_ids):
