@@ -43,9 +43,9 @@ class SpotifyProcessor(object):
             except requests.exceptions.HTTPError as e:
                 self.log.info("{}".format(e))
                 sleep(15)
-                auth_response = self._auth(refresh=True)
-                self.access_token = auth_response["access_token"]
-                self.refresh_token = auth_response["refresh_token"]
+                self.log.info("Access token: {}".format(self.access_token))
+                self.access_token = self._auth()
+                self.log.info("Access token: {}".format(self.access_token))
                 retries += 1
                 if retries <= self.retry:
                     self.log.info("Trying again!")
@@ -64,9 +64,7 @@ class SpotifyProcessor(object):
     def _get_categories(self):
         self.info = []
         self.categories = []
-        auth_response = self._auth()
-        self.access_token = auth_response["access_token"]
-        self.refresh_token = auth_response["refresh_token"]
+        self.access_token = self._auth()
         while True:
             response = self._make_request(self.base_url + "browse/categories?limit=50", self.access_token, self.next)
             categories = response.json()["categories"]
@@ -187,21 +185,18 @@ class SpotifyProcessor(object):
                 continue
         return artist_list
 
-    def _auth(self, refresh=False):
+    def _auth(self):
         data = dict()
         headers = dict()
-        if refresh:
-            data["grant_type"] = "refresh_token"
-            data["refresh_token"] = self.refresh_token
-        else:
-            data["grant_type"] = "client_credentials"
+        data["grant_type"] = "client_credentials"
         headers["Authorization"] = "Basic ZTZiOWQ0NzE2MTk3NGRlMWJmZGViYjhmMGQwMmViMjQ6MjhjYTgxMjAzZWEzNDllZTg0MGIzNzY5MjliZDZmZjA="
         headers["Content-Type"] = "application/x-www-form-urlencoded"
         response = requests.post("https://accounts.spotify.com/api/token", data=data, headers=headers)
         self.log.info("Data: {}".format(data))
         self.log.info("Headers: {}".format(headers))
         if response.status_code == 200:
-            return response.json()
+            self.log.info(response.json())
+            return response.json()["access_token"]
         else:
             self.log.info(response.headers)
             raise Exception("Spotify login failed to run by returning code of {}.".format(response.status_code))
