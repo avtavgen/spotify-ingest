@@ -44,7 +44,6 @@ class SpotifyProcessor(object):
                 self.log.info("{}".format(e))
                 sleep(6)
                 if response.status_code == 401:
-                    sleep()
                     self.access_token = self._auth()
                 retries += 1
                 if retries <= self.retry:
@@ -109,7 +108,6 @@ class SpotifyProcessor(object):
                 resp = self._get_tracks(playlist)
                 track_list.extend(resp[0])
                 user_list.extend(resp[1])
-                sleep(randint(3, 6))
             category_data["category_id"] = category["id"]
             category_data["category_name"] = category["name"]
             category_data["track_count"] = len(track_list)
