@@ -23,6 +23,7 @@ class SpotifyProcessor(object):
         self.track_list = []
         self.base_url = "https://api.spotify.com/v1/"
         self.access_token = ""
+        self.refresh_token = ""
         self.headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) '
                                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
@@ -41,9 +42,10 @@ class SpotifyProcessor(object):
                 return response
             except requests.exceptions.HTTPError as e:
                 self.log.info("{}".format(e))
-                self.log.info(response.headers)
                 sleep(15)
-                self.access_token = self._auth()
+                auth_response = self._auth(refresh=True)
+                self.access_token = auth_response["access_token"]
+                self.refresh_token = auth_response["refresh_token"]
                 retries += 1
                 if retries <= self.retry:
                     self.log.info("Trying again!")
@@ -62,7 +64,9 @@ class SpotifyProcessor(object):
     def _get_categories(self):
         self.info = []
         self.categories = []
-        self.access_token = self._auth()
+        auth_response = self._auth()
+        self.access_token = auth_response["access_token"]
+        self.refresh_token = auth_response["refresh_token"]
         while True:
             response = self._make_request(self.base_url + "browse/categories?limit=50", self.access_token, self.next)
             categories = response.json()["categories"]
@@ -183,20 +187,24 @@ class SpotifyProcessor(object):
                 continue
         return artist_list
 
-    def _auth(self):
+    def _auth(self, refresh=False):
         data = dict()
         headers = dict()
-        data["grant_type"] = "client_credentials"
+        if refresh:
+            data["grant_type"] = "refresh_token"
+            data["refresh_token"] = self.refresh_token
+        else:
+            data["grant_type"] = "client_credentials"
         headers["Authorization"] = "Basic ZTZiOWQ0NzE2MTk3NGRlMWJmZGViYjhmMGQwMmViMjQ6MjhjYTgxMjAzZWEzNDllZTg0MGIzNzY5MjliZDZmZjA="
         headers["Content-Type"] = "application/x-www-form-urlencoded"
         response = requests.post("https://accounts.spotify.com/api/token", data=data, headers=headers)
         self.log.info("Data: {}".format(data))
         self.log.info("Headers: {}".format(headers))
         if response.status_code == 200:
-            return response.json()["access_token"]
+            return response.json()
         else:
             self.log.info(response.headers)
-            raise Exception("SF login failed to run by returning code of {}.".format(response.status_code))
+            raise Exception("Spotify login failed to run by returning code of {}.".format(response.status_code))
 
     def fetch(self):
         self.log.info('Making request to Spotify for daily creators export')
