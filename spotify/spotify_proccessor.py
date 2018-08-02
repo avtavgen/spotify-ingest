@@ -42,7 +42,7 @@ class SpotifyProcessor(object):
             except requests.exceptions.HTTPError as e:
                 self.log.info("{}".format(e))
                 sleep(15)
-                self.access_token = self._auth(refresh=True)
+                self.access_token = self._auth(refresh=self.access_token)
                 retries += 1
                 if retries <= self.retry:
                     self.log.info("Trying again!")
@@ -187,7 +187,7 @@ class SpotifyProcessor(object):
         headers = dict()
         if refresh:
             data["grant_type"] = "refresh_token"
-            data["refresh_token"] = self.access_token
+            data["refresh_token"] = refresh
         else:
             data["grant_type"] = "client_credentials"
         headers["Authorization"] = "Basic ZTZiOWQ0NzE2MTk3NGRlMWJmZGViYjhmMGQwMmViMjQ6MjhjYTgxMjAzZWEzNDllZTg0MGIzNzY5MjliZDZmZjA="
