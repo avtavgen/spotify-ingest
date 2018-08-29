@@ -5,4 +5,4 @@ jobs:
     language: python
     name: Main
     entrypoint: "main.py"
-    schedule: 0 0,12 * * *
+    schedule: 0 0 * * Wed,Sun
